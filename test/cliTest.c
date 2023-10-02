@@ -1,28 +1,19 @@
 #include <stdio.h>
 #include <time.h>
 /*****************************TEMPLATE INCLUDE**************************************/
+//Dependencies
 #define ASCII_PRINTER_STATIC_IMPLEMENTATION
 #define ASCII_PARSER_STATIC_IMPLEMENTATION
-#define CLI_STATIC_IMPLEMENTATION
+#include "asciiParser_t.h" //Implementation
+#include "asciiPrinter_t.h" //Implementation
+
 #define CLI_IMPLEMENT_HELP_FUNC_COMMAND
-
-//following just for testing
-#define ASCII_PARSER_ONLY_PROTOTYPE_DECLARATION
-#include "asciiParser.h" //Prototype
-#undef ASCII_PARSER_ONLY_PROTOTYPE_DECLARATION
-#include "asciiParser.h" //Implementation
-
-//following just for testing
-#define ASCII_PRINTER_ONLY_PROTOTYPE_DECLARATION
-#include "asciiPrinter.h" //Prototype
-#undef ASCII_PRINTER_ONLY_PROTOTYPE_DECLARATION
-#include "asciiPrinter.h" //Implementation
-
+#define CLI_STATIC_IMPLEMENTATION
 //following just for testing
 #define CLI_ONLY_PROTOTYPE_DECLARATION
-#include "cli.h" //Prototype
+#include "cli_t.h" //Prototype
 #undef CLI_ONLY_PROTOTYPE_DECLARATION
-#include "cli.h" //Implementation
+#include "cli_t.h" //Implementation
 /***********************************************************************************/
 
 static unsigned int cliPrintCallback(const char * buffer, unsigned int len)

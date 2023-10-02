@@ -34,7 +34,7 @@
 #include <string.h>
 
 
-#if !defined(_ASCII_PARSER_INCLUDED) || !defined(_ASCII_PRINTER_INCLUDED)
+#if (!defined(_ASCII_PARSER_INCLUDED) || !defined(_ASCII_PRINTER_INCLUDED)) && !defined(CLI_ONLY_PROTOTYPE_DECLARATION)
 #error "this template depends on cAsciiParser.h & cAsciiPrinter.h include them before this template via extern or cSuite"
 #endif
 
