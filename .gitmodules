@@ -1,0 +1,6 @@
+[submodule "extern/cSuite/cAsciiParser"]
+	path = extern/cSuite/cAsciiParser
+	url = git@github.com:Haerteleric/cAsciiParser.git
+[submodule "extern/cSuite/cAsciiPrinter"]
+	path = extern/cSuite/cAsciiPrinter
+	url = git@github.com:Haerteleric/cAsciiPrinter.git
