@@ -42,6 +42,9 @@
 #define _CLI_INCLUDED
 #endif
 
+#ifndef CLI_ASSERT
+    #define CLI_ASSERT(...) //stub
+#endif
 
 typedef unsigned int (* cliPrint_func)(const char * buffer, unsigned  int len);
 typedef void (* cliExec_func)(int argc, char const *argv[], cliPrint_func outputFunc);
@@ -224,6 +227,9 @@ void cli_inputChar(cliInstance_t * instance, char inputChar)
 ;
 #else
 {
+
+    CLI_ASSERT(instance);
+
     switch (inputChar)
     {
         //Check if Return got hit
@@ -262,6 +268,8 @@ void cli_tick(cliInstance_t * instance)
 ;
 #else
 {
+    CLI_ASSERT(instance);
+
     //check if there is data to be parsed
     if(instance->actionPending)
     {
@@ -341,6 +349,8 @@ void cli_clear(cliInstance_t * instance)
 ;
 #else
 {
+    CLI_ASSERT(instance);
+
     instance->inputBufferFilledSize = 0;
     instance->actionPending = true;
 }
@@ -353,11 +363,14 @@ inline
 #ifdef CLI_STATIC_IMPLEMENTATION
 static
 #endif 
-void cli_addCommand(cliInstance_t * instance, cliEntry_t *command)
+void cli_addCommand(cliInstance_t * instance, cliEntry_t * command)
 #ifdef CLI_ONLY_PROTOTYPE_DECLARATION
 ;
 #else
 {
+    CLI_ASSERT(instance);
+    CLI_ASSERT(command);
+
     cliEntry_t * lastCommand = instance->commandLinkedListRoot;
 
     if(lastCommand == NULL)
@@ -392,6 +405,10 @@ void cli_removeCommand(cliInstance_t * instance, cliEntry_t *command)
 ;
 #else
 {
+    CLI_ASSERT(instance);
+    CLI_ASSERT(command);
+
+
     //check if there is something to remove
     if(instance->commandLinkedListRoot == NULL)
     {
@@ -443,6 +460,8 @@ cliArgumentType_t cli_classifyArgumentType(const char * arg)
 ;
 #else
 {
+    CLI_ASSERT(arg);
+
     if( arg[0] == '0' )
     {
         if(arg[1] == 'b')
@@ -499,6 +518,8 @@ void cli_putUnsignedHex(cliPrint_func output, unsigned int num)
 ;
 #else
 {
+    CLI_ASSERT(output);
+
 #ifndef CLI_NO_HEX_PREFIX_OUTPUT
     output("0x", 2);
 #endif
@@ -519,6 +540,8 @@ void cli_putByteHex(cliPrint_func output, unsigned char byte)
 ;
 #else
 {
+    CLI_ASSERT(output);
+
     ascii_putByteHex((write_func)output, byte);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
@@ -534,6 +557,9 @@ void    cli_putNibbleHex(cliPrint_func output, unsigned char nibble)
 ;
 #else
 {
+    CLI_ASSERT(output);
+    CLI_ASSERT(nibble <= 0xf);
+
     ascii_putNibbleHex((write_func)output, nibble);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
@@ -550,6 +576,8 @@ void    cli_putUnsignedDecimal(cliPrint_func output, unsigned int num)
 ;
 #else
 {
+    CLI_ASSERT(output);
+
     ascii_putUnsignedDecimal((write_func)output, num);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
@@ -566,6 +594,8 @@ unsigned int cli_getUnsignedHex(const char * arg)
 ;
 #else
 {
+    CLI_ASSERT(arg);
+
     return ascii_parseUnsignedHex(arg+2); // skip 0x Prefix
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
@@ -582,6 +612,8 @@ unsigned int cli_getUnsignedDecimal(const char * arg)
 ;
 #else
 {
+    CLI_ASSERT(arg);
+
     return ascii_parseUnsignedDecimal(arg);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
@@ -598,6 +630,9 @@ int cli_getSignedDecimal(const char * arg)
 ;
 #else
 {
+    CLI_ASSERT(arg);
+
+
     int signum = 1;
     if(*arg == '-')
     {
@@ -626,6 +661,8 @@ unsigned char cli_getByteHex(const char * arg)
 ;
 #else
 {
+    CLI_ASSERT(arg);
+
     return ascii_parseByteHex(arg);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
@@ -644,6 +681,8 @@ unsigned  int  cli_getByteArraySize(const char * arg)
 ;
 #else
 {
+    CLI_ASSERT(arg);
+
     return getElementsByteArray(arg, NULL);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
@@ -662,6 +701,9 @@ unsigned  int  cli_getByteArrayElements(const char * arg, unsigned char * buffer
 ;
 #else
 {
+    CLI_ASSERT(arg);
+    CLI_ASSERT(buffer);
+
     return getElementsByteArray(arg, buffer);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
@@ -684,15 +726,18 @@ static void printHelp(int argc, char const *argv[], cliPrint_func outputFunc)
     cliEntry_t * entry = rootHelpEntry.next;
     while (entry)
     {
-        //Command
-        outputFunc("[",1);
-        outputFunc(entry->commandCallName,strlen(entry->commandCallName));
-        outputFunc("]",1);
-        outputFunc("\r\n", 2);
-        //Help text
-        outputFunc(entry->commandHelpText,strlen(entry->commandHelpText));
-        outputFunc("\r\n", 2);
-        outputFunc("\r\n", 2);
+        if(entry->commandHelpText)
+        {
+            //Command
+            outputFunc("[",1);
+            outputFunc(entry->commandCallName,strlen(entry->commandCallName));
+            outputFunc("]",1);
+            outputFunc("\r\n", 2);
+            //Help text
+            outputFunc(entry->commandHelpText,strlen(entry->commandHelpText));
+            outputFunc("\r\n", 2);
+            outputFunc("\r\n", 2);
+        }
 
         //Goto next command
         entry = ( entry->next != entry ? entry->next : NULL );
