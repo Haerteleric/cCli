@@ -297,9 +297,13 @@ void cli_tick(cliInstance_t * instance)
         while(command)
         {
             int commandLength = strlen(command->commandCallName);
+
             
             //Argument 0 holds the given command call
-            if( strncmp(argumentsVector[0], command->commandCallName, commandLength) == 0)
+            if(
+                (instance->inputBufferFilledSize >= commandLength)
+                && (memcmp(argumentsVector[0], command->commandCallName, commandLength) == 0)
+            )
             {
                 //Found Matching Command
                 
@@ -523,8 +527,10 @@ void cli_putUnsignedHex(cliPrint_func output, unsigned int num)
 #ifndef CLI_NO_HEX_PREFIX_OUTPUT
     output("0x", 2);
 #endif
+    char buffer[20]; // Max int value: 18446744073709551615 (20 chars)
+    unsigned int len = ascii_putHexLittleEndian(buffer, (unsigned char *)&num, sizeof(num));
 
-    ascii_putHexLittleEndian((write_func)output,&num, sizeof(num));
+    output(buffer, len);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
 
@@ -542,7 +548,9 @@ void cli_putByteHex(cliPrint_func output, unsigned char byte)
 {
     CLI_ASSERT(output);
 
-    ascii_putByteHex((write_func)output, byte);
+    char buffer[2]; //always 2 chars
+    ascii_putByteHex(buffer, byte);
+    output(buffer, 2);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
 
@@ -560,7 +568,9 @@ void    cli_putNibbleHex(cliPrint_func output, unsigned char nibble)
     CLI_ASSERT(output);
     CLI_ASSERT(nibble <= 0xf);
 
-    ascii_putNibbleHex((write_func)output, nibble);
+    char buffer; //allways one char
+    ascii_putNibbleHex(&buffer, nibble);
+    output(&buffer, 1);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
 
@@ -578,7 +588,9 @@ void    cli_putUnsignedDecimal(cliPrint_func output, unsigned int num)
 {
     CLI_ASSERT(output);
 
-    ascii_putUnsignedDecimal((write_func)output, num);
+    char buffer[20]; // Max int value: 18446744073709551615 (20 chars)
+    unsigned int len = ascii_putUnsignedDecimal(buffer, num);
+    output(buffer, len);
 }
 #endif // NOT(CLI_ONLY_PROTOTYPE_DECLARATION)
 
