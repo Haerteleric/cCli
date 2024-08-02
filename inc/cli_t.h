@@ -239,6 +239,16 @@ void cli_inputChar(cliInstance_t * instance, char inputChar)
             instance->actionPending = true;
         } break;
 
+        case '\b':
+        {
+            instance->inputBufferFilledSize > 0 ? instance->inputBufferFilledSize-- : 0;
+            if(instance->localEcho)
+            {
+                instance->printFunction("\b \b", 3);
+            }
+        }
+        break;
+
         default:
         {
             if(!instance->actionPending && (instance->inputBufferFilledSize < (instance->inputBufferMaxSize - 1))) //always needs space for trailing \0
