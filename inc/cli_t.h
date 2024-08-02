@@ -241,10 +241,14 @@ void cli_inputChar(cliInstance_t * instance, char inputChar)
 
         case '\b':
         {
-            instance->inputBufferFilledSize > 0 ? instance->inputBufferFilledSize-- : 0;
-            if(instance->localEcho)
+            if(instance->inputBufferFilledSize)
             {
-                instance->printFunction("\b \b", 3);
+                instance->inputBufferFilledSize--;
+
+                if(instance->localEcho)
+                {
+                    instance->printFunction("\b \b", 3);
+                }
             }
         }
         break;
